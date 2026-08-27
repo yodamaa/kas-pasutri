@@ -3,18 +3,20 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
+use App\Traits\CoupleScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Budget extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, CoupleScoped;
 
     protected $fillable = [
         'peruntukan_id',
         'jumlah',
         'bulan',
         'tahun',
+        'couple_id',
     ];
 
     protected $casts = [
@@ -31,5 +33,10 @@ class Budget extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function couple()
+    {
+        return $this->belongsTo(Couple::class);
     }
 }

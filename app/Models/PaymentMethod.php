@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use App\Traits\CoupleScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PaymentMethod extends Model
 {
-    use HasFactory;
+    use HasFactory, CoupleScoped;
 
     protected $fillable = [
         'nama',
         'icon',
         'warna',
         'is_active',
+        'couple_id',
     ];
 
     protected $casts = [
@@ -23,5 +25,10 @@ class PaymentMethod extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'metode_pembayaran_id');
+    }
+
+    public function couple()
+    {
+        return $this->belongsTo(Couple::class);
     }
 }

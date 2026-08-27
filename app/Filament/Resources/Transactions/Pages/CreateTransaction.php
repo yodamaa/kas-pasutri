@@ -13,6 +13,13 @@ class CreateTransaction extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        $user = auth()->user();
+        $coupleId = $user->getCoupleId();
+
+        if ($coupleId) {
+            $data['couple_id'] = $coupleId;
+        }
+
         $budgetId = $data['budget_id'] ?? null;
 
         if ($budgetId && ($data['tipe'] ?? '') === 'pengeluaran') {

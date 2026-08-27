@@ -5,8 +5,6 @@ namespace App\Filament\Resources\Transactions\Schemas;
 use App\Models\Budget;
 use App\Models\Category;
 use App\Models\PaymentMethod;
-use App\Models\Transaction;
-use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -14,12 +12,13 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\DB;
 
 class TransactionForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $coupleId = auth()->user()->getCoupleId();
+
         return $schema
             ->components([
                 Select::make('tipe')
@@ -33,27 +32,30 @@ class TransactionForm
                     ->afterStateUpdated(fn ($set) => $set('budget_id', null)),
                 Select::make('peruntukan_id')
                     ->label('Jenis Peruntukan')
-                    ->relationship('peruntukan', 'nama')
+                    ->relationship('peruntukan', 'nama', fn ($query) => $coupleId ? $query->where('couple_id', $coupleId) : $query)
                     ->searchable()
                     ->preload()
                     ->required()
                     ->live()
-                    ->afterStateUpdated(fn ($set) => $set('budget_id', null))
-                    ->options(fn ($get) => Category::where('tipe', $get('tipe') ?? 'pengeluaran')->pluck('nama', 'id')),
+                    ->afterStateUpdated(fn ($set) => $set('budget_id', null)),
                 Select::make('budget_id')
                     ->label('Pakai Anggaran?')
-                    ->options(function ($get) {
+                    ->options(function ($get) use ($coupleId) {
                         $peruntukanId = $get('peruntukan_id');
                         if (!$peruntukanId) {
                             return [];
                         }
 
                         $now = now();
-
-                        return Budget::where('peruntukan_id', $peruntukanId)
+                        $query = Budget::where('peruntukan_id', $peruntukanId)
                             ->where('bulan', $now->month)
-                            ->where('tahun', $now->year)
-                            ->withCount([
+                            ->where('tahun', $now->year);
+
+                        if ($coupleId) {
+                            $query->where('couple_id', $coupleId);
+                        }
+
+                        return $query->withCount([
                                 'transactions as terpakai' => function ($query) use ($now) {
                                     $query->whereMonth('created_at', $now->month)
                                         ->whereYear('created_at', $now->year);
@@ -126,13 +128,13 @@ class TransactionForm
                     ->default(now()),
                 Select::make('metode_pembayaran_id')
                     ->label('Metode Pembayaran')
-                    ->relationship('metodePembayaran', 'nama')
+                    ->relationship('metodePembayaran', 'nama', fn ($query) => $coupleId ? $query->where('couple_id', $coupleId) : $query)
                     ->searchable()
                     ->preload()
                     ->required(),
                 Select::make('user_id')
                     ->label('Dicatat oleh')
-                    ->relationship('user', 'name')
+                    ->relationship('user', 'name', fn ($query) => $coupleId ? $query->where('couple_id', $coupleId) : $query)
                     ->searchable()
                     ->preload()
                     ->required(),

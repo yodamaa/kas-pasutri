@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\Couple;
 use App\Models\User;
 use BackedEnum;
 use Filament\Forms\Components\Select;
@@ -53,12 +54,25 @@ class UserResource extends Resource
                 Select::make('role')
                     ->label('Role')
                     ->options([
+                        'superadmin' => 'Superadmin',
                         'suami' => 'Suami',
                         'istri' => 'Istri',
-                        'admin' => 'Admin',
                     ])
                     ->required()
-                    ->default('suami'),
+                    ->default('suami')
+                    ->live()
+                    ->afterStateUpdated(function ($get, $set, $state) {
+                        if ($state !== 'suami' && $state !== 'istri') {
+                            $set('couple_id', null);
+                        }
+                    }),
+                Select::make('couple_id')
+                    ->label('Pasangan')
+                    ->relationship('couple', 'nama')
+                    ->searchable()
+                    ->preload()
+                    ->nullable()
+                    ->visible(fn ($get) => in_array($get('role'), ['suami', 'istri'])),
                 Toggle::make('is_active')
                     ->label('Aktif')
                     ->default(true),
@@ -77,11 +91,15 @@ class UserResource extends Resource
                     ->label('Email')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('couple.nama')
+                    ->label('Pasangan')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('role')
                     ->label('Role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'admin' => 'danger',
+                        'superadmin' => 'danger',
                         'suami' => 'primary',
                         'istri' => 'warning',
                         default => 'gray',
@@ -100,9 +118,9 @@ class UserResource extends Resource
                 SelectFilter::make('role')
                     ->label('Role')
                     ->options([
+                        'superadmin' => 'Superadmin',
                         'suami' => 'Suami',
                         'istri' => 'Istri',
-                        'admin' => 'Admin',
                     ]),
             ])
             ->recordActions([

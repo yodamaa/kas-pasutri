@@ -8,4 +8,13 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCategory extends CreateRecord
 {
     protected static string $resource = CategoryResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $coupleId = auth()->user()->getCoupleId();
+        if ($coupleId) {
+            $data['couple_id'] = $coupleId;
+        }
+        return $data;
+    }
 }

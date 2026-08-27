@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
+use App\Traits\CoupleScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, CoupleScoped;
 
     protected $fillable = [
         'tipe',
@@ -19,6 +20,7 @@ class Transaction extends Model
         'budget_id',
         'metode_pembayaran_id',
         'user_id',
+        'couple_id',
         'lampiran',
         'is_recurring',
         'recurring_interval',
@@ -48,5 +50,10 @@ class Transaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function couple()
+    {
+        return $this->belongsTo(Couple::class);
     }
 }
