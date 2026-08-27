@@ -35,10 +35,10 @@
 - [ ] **Import transaksi dari CSV** - Fitur upload bulk transaksi
 
 ### Low Priority
-- [ ] **Dark mode** - Toggle mode gelap
-- [ ] **Mobile responsive** - Optimasi tampilan untuk HP
-- [ ] **Role management** - Selain suami/istri, tambah role lain (opsional)
-- [ ] **Audit log** - Catatan siapa yang mengubah data kapan
+- [x] **Dark mode** - Toggle mode gelap ✅ Done
+- [x] **Mobile responsive** - Optimasi tampilan untuk HP ✅ Done
+- [x] **Role management** - Selain suami/istri, tambah role lain (opsional) ✅ Done
+- [x] **Audit log** - Catatan siapa yang mengubah data kapan ✅ Done
 
 ---
 

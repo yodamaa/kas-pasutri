@@ -18,6 +18,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'role',
         'avatar',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -30,12 +31,14 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return in_array($this->role, ['suami', 'istri', 'admin'])
+            && ($this->is_active ?? true);
     }
 
     public function transactions()

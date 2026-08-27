@@ -22,7 +22,8 @@ class TransactionsTable
                 TextColumn::make('tanggal')
                     ->label('Tanggal')
                     ->date('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('tipe')
                     ->label('Tipe')
                     ->badge()
@@ -31,30 +32,34 @@ class TransactionsTable
                         'pengeluaran' => 'danger',
                     }),
                 TextColumn::make('peruntukan.nama')
-                    ->label('Peruntukan')
+                    ->label('Kategori')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('jumlah')
                     ->label('Jumlah')
                     ->formatStateUsing(fn ($state, $record) => $record->tipe === 'pemasukan'
-                        ? '+ ' . number_format($state, 0, ',', '.')
-                        : '- ' . number_format($state, 0, ',', '.'))
+                        ? '+ Rp ' . number_format($state, 0, ',', '.')
+                        : '- Rp ' . number_format($state, 0, ',', '.'))
                     ->color(fn ($record) => $record->tipe === 'pemasukan' ? 'success' : 'danger')
                     ->weight('bold')
                     ->sortable(),
                 TextColumn::make('metodePembayaran.nama')
                     ->label('Metode Bayar')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('user.name')
                     ->label('Oleh')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_recurring')
                     ->label('Berulang')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deskripsi')
                     ->label('Deskripsi')
-                    ->limit(30)
-                    ->searchable(),
+                    ->limit(25)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('tanggal', 'desc')
             ->filters([
@@ -65,7 +70,7 @@ class TransactionsTable
                         'pengeluaran' => 'Pengeluaran',
                     ]),
                 SelectFilter::make('peruntukan_id')
-                    ->label('Peruntukan')
+                    ->label('Kategori')
                     ->options(fn () => Category::pluck('nama', 'id')),
                 SelectFilter::make('metode_pembayaran_id')
                     ->label('Metode Pembayaran')
