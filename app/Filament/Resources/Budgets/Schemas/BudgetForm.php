@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Budgets\Schemas;
 
-use App\Models\Category;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -11,13 +10,11 @@ class BudgetForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $coupleId = auth()->user()->getCoupleId();
-
         return $schema
             ->components([
                 Select::make('peruntukan_id')
                     ->label('Jenis Peruntukan')
-                    ->relationship('peruntukan', 'nama', fn ($query) => $coupleId ? $query->where('couple_id', $coupleId)->where('tipe', 'pengeluaran') : $query->where('tipe', 'pengeluaran'))
+                    ->relationship('peruntukan', 'nama', fn ($query) => $query->where('tipe', 'pengeluaran')->where('is_active', true))
                     ->searchable()
                     ->preload()
                     ->required(),

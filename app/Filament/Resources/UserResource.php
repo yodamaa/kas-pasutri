@@ -30,6 +30,11 @@ class UserResource extends Resource
 
     protected static ?string $pluralModelLabel = 'User';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->role === 'superadmin';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

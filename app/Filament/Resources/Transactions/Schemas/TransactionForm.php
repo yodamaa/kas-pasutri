@@ -32,7 +32,7 @@ class TransactionForm
                     ->afterStateUpdated(fn ($set) => $set('budget_id', null)),
                 Select::make('peruntukan_id')
                     ->label('Jenis Peruntukan')
-                    ->relationship('peruntukan', 'nama', fn ($query) => $coupleId ? $query->where('couple_id', $coupleId) : $query)
+                    ->relationship('peruntukan', 'nama', fn ($query, $get) => $query->where('is_active', true)->where('tipe', $get('tipe')))
                     ->searchable()
                     ->preload()
                     ->required()
@@ -128,7 +128,7 @@ class TransactionForm
                     ->default(now()),
                 Select::make('metode_pembayaran_id')
                     ->label('Metode Pembayaran')
-                    ->relationship('metodePembayaran', 'nama', fn ($query) => $coupleId ? $query->where('couple_id', $coupleId) : $query)
+                    ->relationship('metodePembayaran', 'nama', fn ($query) => $query->where('is_active', true))
                     ->searchable()
                     ->preload()
                     ->required(),
