@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Transactions\Schemas;
 use App\Models\Budget;
 use App\Models\Category;
 use App\Models\PaymentMethod;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -17,7 +18,7 @@ class TransactionForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $coupleId = auth()->user()->getCoupleId();
+        $coupleId = Filament::getTenant()?->getKey();
 
         return $schema
             ->components([

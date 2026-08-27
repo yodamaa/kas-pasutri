@@ -15,6 +15,8 @@ class ActivityLogResource extends Resource
 {
     protected static ?string $model = ActivityLog::class;
 
+    protected static bool $isScopedToTenant = false;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Pengaturan';
@@ -24,6 +26,11 @@ class ActivityLogResource extends Resource
     protected static ?string $modelLabel = 'Log Aktivitas';
 
     protected static ?string $pluralModelLabel = 'Log Aktivitas';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->role === 'superadmin';
+    }
 
     public static function form(Schema $schema): Schema
     {

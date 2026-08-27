@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\HasCurrentTenantLabel;
+use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Couple extends Model
+class Couple extends Model implements HasName, HasCurrentTenantLabel
 {
     use HasFactory;
 
@@ -19,6 +21,16 @@ class Couple extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function getFilamentName(): string
+    {
+        return $this->nama;
+    }
+
+    public function getCurrentTenantLabel(): string
+    {
+        return $this->nama;
+    }
 
     public function users(): HasMany
     {

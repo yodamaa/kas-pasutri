@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
-use App\Traits\CoupleScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Budget extends Model
 {
-    use HasFactory, LogsActivity, CoupleScoped;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'peruntukan_id',

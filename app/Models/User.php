@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasDefaultTenant;
+use Filament\Models\Contracts\HasTenants;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
+use Illuminate\Support\Collection;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasDefaultTenant, HasTenants
 {
     use HasFactory, Notifiable;
 
@@ -42,6 +46,39 @@ class User extends Authenticatable implements FilamentUser
             && ($this->is_active ?? true);
     }
 
+    public function getDefaultTenant(Panel $panel): ?Model
+    {
+        if ($this->isSuperadmin()) {
+            $coupleId = session('active_couple_id');
+
+            if ($coupleId && ($couple = Couple::find($coupleId))) {
+                return $couple;
+            }
+
+            return Couple::query()->first();
+        }
+
+        return $this->couple;
+    }
+
+    public function getTenants(Panel $panel): array | Collection
+    {
+        if ($this->isSuperadmin()) {
+            return Couple::query()->get();
+        }
+
+        return $this->couple_id ? collect([$this->couple]) : collect();
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        if ($this->isSuperadmin()) {
+            return true;
+        }
+
+        return $this->couple_id === (int) $tenant->getKey();
+    }
+
     public function couple()
     {
         return $this->belongsTo(Couple::class);
@@ -55,13 +92,5 @@ class User extends Authenticatable implements FilamentUser
     public function isSuperadmin(): bool
     {
         return $this->role === 'superadmin';
-    }
-
-    public function getCoupleId(): ?int
-    {
-        if ($this->isSuperadmin()) {
-            return session('active_couple_id');
-        }
-        return $this->couple_id;
     }
 }

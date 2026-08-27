@@ -2,12 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\RegisterCouple;
 use App\Filament\Widgets\BudgetOverviewWidget;
 use App\Filament\Widgets\MonthlyComparisonChart;
 use App\Filament\Widgets\RecentTransactionsWidget;
 use App\Filament\Widgets\ExpenseByCategoryChart;
 use App\Filament\Widgets\OverviewStatsWidget;
-use App\Filament\Widgets\SwitchCoupleWidget;
+use App\Models\Couple;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -40,6 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ->darkMode()
             ->topbar(true)
             ->sidebarCollapsibleOnDesktop()
+            ->tenant(Couple::class, ownershipRelationship: 'couple')
+            ->tenantRegistration(RegisterCouple::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -47,7 +50,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                SwitchCoupleWidget::class,
                 OverviewStatsWidget::class,
                 MonthlyComparisonChart::class,
                 ExpenseByCategoryChart::class,

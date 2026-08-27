@@ -17,6 +17,8 @@ class CoupleResource extends Resource
 {
     protected static ?string $model = Couple::class;
 
+    protected static bool $isScopedToTenant = false;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-heart';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Pengaturan';
