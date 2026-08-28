@@ -29,10 +29,10 @@
 - [ ] **Recurring transaction automation** - Otomatis buat transaksi berulang tiap periode
 
 ### Medium Priority
-- [ ] **Dashboard filter bulan/tahun** - Saat ini dashboard hanya menampilkan data bulan ini
-- [ ] **Budget alert notifikasi** - Notifikasi saat anggaran mendekati batas
-- [ ] **Multiple budget per kategori** - Saat ini 1 kategori = 1 budget per bulan
-- [ ] **Import transaksi dari CSV** - Fitur upload bulk transaksi
+- [x] **Dashboard filter bulan/tahun** - Filter bulan & tahun di dashboard (membaca `$this->filters`) ✅ Done
+- [x] **Budget alert notifikasi** - Notifikasi real-time saat anggaran melewati `alert_threshold`/melebihi target ✅ Done
+- [x] **Multiple budget per kategori** - 1 kategori bisa punya banyak budget (field `nama` + `alert_threshold`) ✅ Done
+- [x] **Import transaksi dari CSV** - Upload bulk transaksi via action di ListTransactions ✅ Done
 
 ### Low Priority
 - [x] **Dark mode** - Toggle mode gelap ✅ Done
