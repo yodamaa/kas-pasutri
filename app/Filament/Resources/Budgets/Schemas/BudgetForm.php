@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Budgets\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
 
 class BudgetForm
 {
@@ -27,6 +28,8 @@ class BudgetForm
                     ->label('Anggaran (Rp)')
                     ->required()
                     ->numeric()
+                    ->mask(RawJs::make('$money($input, \'.\', \',\', 0)'))
+                    ->stripCharacters(',')
                     ->prefix('Rp')
                     ->inputMode('numeric')
                     ->step(10000),

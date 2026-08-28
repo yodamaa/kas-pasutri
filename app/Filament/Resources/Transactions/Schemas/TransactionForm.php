@@ -13,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Support\RawJs;
 use Illuminate\Support\Carbon;
 
 class TransactionForm
@@ -90,6 +91,8 @@ class TransactionForm
                     ->label('Jumlah (Rp)')
                     ->required()
                     ->numeric()
+                    ->mask(RawJs::make('$money($input, \'.\', \',\', 0)'))
+                    ->stripCharacters(',')
                     ->prefix('Rp')
                     ->inputMode('numeric')
                     ->step(1000)
