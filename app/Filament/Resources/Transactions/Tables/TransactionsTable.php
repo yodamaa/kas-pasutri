@@ -6,12 +6,18 @@ use App\Models\Category;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransactionsTable
 {
@@ -38,8 +44,8 @@ class TransactionsTable
                 TextColumn::make('jumlah')
                     ->label('Jumlah')
                     ->formatStateUsing(fn ($state, $record) => $record->tipe === 'pemasukan'
-                        ? '+ Rp ' . number_format($state, 0, ',', '.')
-                        : '- Rp ' . number_format($state, 0, ',', '.'))
+                        ? '+ Rp '.number_format($state, 0, ',', '.')
+                        : '- Rp '.number_format($state, 0, ',', '.'))
                     ->color(fn ($record) => $record->tipe === 'pemasukan' ? 'success' : 'danger')
                     ->weight('bold')
                     ->sortable(),
@@ -62,6 +68,9 @@ class TransactionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('tanggal', 'desc')
+            ->modifyQueryUsing(fn (Builder $query) => $query->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]))
             ->filters([
                 SelectFilter::make('tipe')
                     ->label('Tipe')
@@ -78,9 +87,13 @@ class TransactionsTable
                 SelectFilter::make('user_id')
                     ->label('Dicatat oleh')
                     ->options(fn () => User::pluck('name', 'id')),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
+                ForceDeleteAction::make(),
+                RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'tipe',
@@ -29,6 +30,7 @@ class Transaction extends Model
         'jumlah' => 'decimal:2',
         'tanggal' => 'date',
         'is_recurring' => 'boolean',
+        'deleted_at' => 'datetime',
     ];
 
     public function peruntukan()

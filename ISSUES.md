@@ -23,10 +23,10 @@
 ## TODO / Fitur yang Belum Dibuat
 
 ### High Priority
-- [ ] **Validation budget_id** - Saat edit transaksi, pastikan budget_id yang dipilih masih valid untuk bulan/tahun transaksi
-- [ ] **Soft delete transaksi** - Agar data tidak hilang total saat dihapus
-- [ ] **Laporan bulanan PDF** - Export laporan ke format PDF
-- [ ] **Recurring transaction automation** - Otomatis buat transaksi berulang tiap periode
+- [x] **Validation budget_id** - Edit transaksi: validasi budget cocok dengan bulan/tahun transaksi, plus restore/force-delete ✅ Done
+- [x] **Soft delete transaksi** - Data tidak hilang total, bisa restore di tabel (TrashedFilter) ✅ Done
+- [x] **Laporan bulanan PDF** - Export laporan PDF per bulan (ringkasan + per kategori vs anggaran) ✅ Done
+- [x] **Recurring transaction automation** - Transaksi berulang (harian/mingguan/bulanan/tahunan) + scheduler & tombol generate manual ✅ Done
 
 ### Medium Priority
 - [x] **Dashboard filter bulan/tahun** - Filter bulan & tahun di dashboard (membaca `$this->filters`) ✅ Done

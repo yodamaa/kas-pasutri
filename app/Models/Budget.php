@@ -52,6 +52,7 @@ class Budget extends Model
             ->exists();
 
         $query = Transaction::where('tipe', 'pengeluaran')
+            ->whereNull('deleted_at')
             ->where(function ($q) use ($otherBudgetExists) {
                 $q->where('budget_id', $this->id);
                 if (! $otherBudgetExists) {

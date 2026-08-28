@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Couple extends Model implements HasName, HasCurrentTenantLabel
+class Couple extends Model implements HasCurrentTenantLabel, HasName
 {
     use HasFactory;
 
@@ -55,5 +55,10 @@ class Couple extends Model implements HasName, HasCurrentTenantLabel
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(PaymentMethod::class);
+    }
+
+    public function recurringTransactions(): HasMany
+    {
+        return $this->hasMany(RecurringTransaction::class);
     }
 }
