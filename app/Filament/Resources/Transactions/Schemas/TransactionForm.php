@@ -13,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Carbon;
 
 class TransactionForm
 {
@@ -47,26 +48,27 @@ class TransactionForm
                             return [];
                         }
 
-                        $now = now();
+                        $tanggal = $get('tanggal');
+                        $bulan = $tanggal ? Carbon::parse($tanggal)->month : now()->month;
+                        $tahun = $tanggal ? Carbon::parse($tanggal)->year : now()->year;
+
                         $query = Budget::where('peruntukan_id', $peruntukanId)
-                            ->where('bulan', $now->month)
-                            ->where('tahun', $now->year);
+                            ->where('bulan', $bulan)
+                            ->where('tahun', $tahun);
 
                         if ($coupleId) {
                             $query->where('couple_id', $coupleId);
                         }
 
-                        return $query->withCount([
-                                'transactions as terpakai' => function ($query) use ($now) {
-                                    $query->whereMonth('created_at', $now->month)
-                                        ->whereYear('created_at', $now->year);
-                                },
-                            ])
-                            ->get()
+                        return $query->get()
                             ->mapWithKeys(function ($budget) {
-                                $sisa = $budget->jumlah - $budget->terpakai;
+                                $label = $budget->nama ? $budget->nama . ' — ' : '';
+                                $label .= 'Rp ' . number_format($budget->sisa, 0, ',', '.') . ' tersisa dari Rp ' . number_format($budget->jumlah, 0, ',', '.');
+                                if ($budget->persentase > 0) {
+                                    $label .= ' (' . $budget->persentase . '%)';
+                                }
                                 return [
-                                    $budget->id => 'Rp ' . number_format($sisa, 0, ',', '.') . ' tersisa dari Rp ' . number_format($budget->jumlah, 0, ',', '.'),
+                                    $budget->id => $label,
                                 ];
                             });
                     })
@@ -78,17 +80,9 @@ class TransactionForm
                     ->default(null)
                     ->afterStateUpdated(function ($get, $set, $state) {
                         if ($state) {
-                            $budget = Budget::withCount([
-                                'transactions as terpakai' => function ($query) {
-                                    $now = now();
-                                    $query->whereMonth('created_at', $now->month)
-                                        ->whereYear('created_at', $now->year);
-                                },
-                            ])->find($state);
-
+                            $budget = Budget::find($state);
                             if ($budget) {
-                                $sisa = $budget->jumlah - $budget->terpakai;
-                                $set('jumlah', $sisa);
+                                $set('jumlah', $budget->sisa);
                             }
                         }
                     }),
@@ -107,26 +101,18 @@ class TransactionForm
                                 return;
                             }
 
-                            $budget = Budget::withCount([
-                                'transactions as terpakai' => function ($query) {
-                                    $now = now();
-                                    $query->whereMonth('created_at', $now->month)
-                                        ->whereYear('created_at', $now->year);
-                                },
-                            ])->find($budgetId);
-
-                            if ($budget) {
-                                $sisa = $budget->jumlah - $budget->terpakai;
-                                if ($value > $sisa) {
-                                    $fail('Jumlah melebihi sisa anggaran! Sisa tersisa: Rp ' . number_format($sisa, 0, ',', '.'));
-                                }
+                            $budget = Budget::find($budgetId);
+                            if ($budget && $value > $budget->sisa) {
+                                $fail('Jumlah melebihi sisa anggaran! Sisa tersisa: Rp ' . number_format($budget->sisa, 0, ',', '.'));
                             }
                         };
                     }),
                 DatePicker::make('tanggal')
                     ->label('Tanggal')
                     ->required()
-                    ->default(now()),
+                    ->default(now())
+                    ->live()
+                    ->afterStateUpdated(fn ($set) => $set('budget_id', null)),
                 Select::make('metode_pembayaran_id')
                     ->label('Metode Pembayaran')
                     ->relationship('metodePembayaran', 'nama', fn ($query) => $query->where('is_active', true))

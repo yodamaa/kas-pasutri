@@ -4,11 +4,13 @@ namespace App\Filament\Resources\Transactions\Pages;
 
 use App\Exports\TransactionExport;
 use App\Filament\Resources\Transactions\TransactionResource;
+use App\Imports\TransactionsImport;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ListRecords;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ListTransactions extends ListRecords
@@ -63,6 +65,27 @@ class ListTransactions extends ListRecords
                     $filename .= '.xlsx';
 
                     return Excel::download(new TransactionExport($tipe, $bulan, $tahun), $filename);
+                }),
+            Action::make('import')
+                ->label('Import CSV')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('info')
+                ->form([
+                    FileUpload::make('file')
+                        ->label('File CSV')
+                        ->acceptedFileTypes(['text/csv', 'application/csv', 'text/plain'])
+                        ->required()
+                        ->helperText('Format kolom: tipe, jumlah, tanggal (d/m/Y), kategori, metode_pembayaran, email (opsional), deskripsi (opsional). Kategori & metode pembayaran harus sudah ada di sistem.'),
+                ])
+                ->action(function (array $data) {
+                    $import = new TransactionsImport();
+                    $import->import($data['file']);
+
+                    Notification::make()
+                        ->title('Import Selesai')
+                        ->body('Data transaksi berhasil diimpor.')
+                        ->success()
+                        ->send();
                 }),
         ];
     }

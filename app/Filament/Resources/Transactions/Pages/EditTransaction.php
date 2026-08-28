@@ -24,16 +24,10 @@ class EditTransaction extends EditRecord
         $budgetId = $data['budget_id'] ?? null;
 
         if ($budgetId && ($data['tipe'] ?? '') === 'pengeluaran') {
-            $budget = Budget::withCount([
-                'transactions as terpakai' => function ($query) {
-                    $now = now();
-                    $query->whereMonth('created_at', $now->month)
-                        ->whereYear('created_at', $now->year);
-                },
-            ])->find($budgetId);
+            $budget = Budget::find($budgetId);
 
             if ($budget) {
-                $sisa = $budget->jumlah - $budget->terpakai;
+                $sisa = $budget->sisa;
 
                 if ($this->record) {
                     $oldBudgetId = $this->record->budget_id;
@@ -55,5 +49,30 @@ class EditTransaction extends EditRecord
         }
 
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        $budgetId = $this->data['budget_id'] ?? null;
+
+        if ($budgetId && ($this->data['tipe'] ?? '') === 'pengeluaran') {
+            $budget = Budget::find($budgetId);
+
+            if ($budget) {
+                if ($budget->isExceeded()) {
+                    Notification::make()
+                        ->title('Anggaran Habis!')
+                        ->body("Anggaran \"{$budget->peruntukan->nama}\" telah melebihi batas ({$budget->persentase}%).")
+                        ->danger()
+                        ->send();
+                } elseif ($budget->isThresholdExceeded()) {
+                    Notification::make()
+                        ->title('Peringatan Anggaran')
+                        ->body("Anggaran \"{$budget->peruntukan->nama}\" telah mencapai {$budget->persentase}% (ambang: {$budget->alert_threshold}%).")
+                        ->warning()
+                        ->send();
+                }
+            }
+        }
     }
 }

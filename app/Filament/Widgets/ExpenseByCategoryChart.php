@@ -8,9 +8,11 @@ use Illuminate\Support\Carbon;
 
 class ExpenseByCategoryChart extends ChartWidget
 {
-    protected ?string $heading = 'Pengeluaran per Kategori (Bulan Ini)';
+    protected ?string $heading = 'Pengeluaran per Kategori';
     protected static ?int $sort = 3;
     protected ?string $maxHeight = '300px';
+
+    public ?array $filters = null;
 
     protected function getType(): string
     {
@@ -19,8 +21,13 @@ class ExpenseByCategoryChart extends ChartWidget
 
     protected function getData(): array
     {
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $bulan = $this->filters['bulan'] ?? now()->month;
+        $tahun = $this->filters['tahun'] ?? now()->year;
+
+        $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+        $this->heading = 'Pengeluaran per Kategori (' . Carbon::create($tahun, $bulan, 1)->translatedFormat('F Y') . ')';
 
         $data = Transaction::where('transactions.tipe', 'pengeluaran')
             ->whereBetween('transactions.tanggal', [$startOfMonth, $endOfMonth])

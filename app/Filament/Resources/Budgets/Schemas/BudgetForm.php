@@ -18,6 +18,11 @@ class BudgetForm
                     ->searchable()
                     ->preload()
                     ->required(),
+                TextInput::make('nama')
+                    ->label('Nama Anggaran (Opsional)')
+                    ->placeholder('Contoh: Makan Minggu 1, Darurat, dll')
+                    ->maxLength(255)
+                    ->helperText('Label untuk membedakan beberapa anggaran di kategori yang sama'),
                 TextInput::make('jumlah')
                     ->label('Anggaran (Rp)')
                     ->required()
@@ -25,6 +30,14 @@ class BudgetForm
                     ->prefix('Rp')
                     ->inputMode('numeric')
                     ->step(10000),
+                TextInput::make('alert_threshold')
+                    ->label('Ambang Notifikasi (%)')
+                    ->numeric()
+                    ->default(80)
+                    ->minValue(1)
+                    ->maxValue(100)
+                    ->suffix('%')
+                    ->helperText('Notifikasi warning saat terpakai mencapai persentase ini'),
                 Select::make('bulan')
                     ->label('Bulan')
                     ->options([

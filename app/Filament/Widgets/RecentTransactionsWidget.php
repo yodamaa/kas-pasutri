@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
+use Illuminate\Support\Carbon;
 
 class RecentTransactionsWidget extends TableWidget
 {
@@ -13,10 +14,20 @@ class RecentTransactionsWidget extends TableWidget
     protected static ?int $sort = 5;
     protected int | string | array $columnSpan = 'full';
 
+    public ?array $filters = null;
+
     public function table(Table $table): Table
     {
+        $bulan = $this->filters['bulan'] ?? now()->month;
+        $tahun = $this->filters['tahun'] ?? now()->year;
+
+        $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
         return $table
-            ->query(Transaction::with(['peruntukan', 'metodePembayaran', 'user'])->latest('tanggal'))
+            ->query(Transaction::with(['peruntukan', 'metodePembayaran', 'user'])
+                ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+                ->latest('tanggal'))
             ->columns([
                 TextColumn::make('tanggal')
                     ->date('d M Y')
