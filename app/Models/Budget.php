@@ -10,6 +10,8 @@ class Budget extends Model
 {
     use HasFactory, LogsActivity;
 
+    private ?float $memoTerpakai = null;
+
     protected $fillable = [
         'peruntukan_id',
         'nama',
@@ -44,6 +46,10 @@ class Budget extends Model
 
     public function getTerpakaiAttribute(): float
     {
+        if ($this->memoTerpakai !== null) {
+            return $this->memoTerpakai;
+        }
+
         $otherBudgetExists = self::where('couple_id', $this->couple_id)
             ->where('peruntukan_id', $this->peruntukan_id)
             ->where('bulan', $this->bulan)
@@ -69,7 +75,7 @@ class Budget extends Model
             $query->where('couple_id', $this->couple_id);
         }
 
-        return (float) $query->sum('jumlah');
+        return $this->memoTerpakai = (float) $query->sum('jumlah');
     }
 
     public function getSisaAttribute(): float

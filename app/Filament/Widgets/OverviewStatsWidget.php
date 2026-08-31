@@ -21,17 +21,17 @@ class OverviewStatsWidget extends BaseStatsOverviewWidget
         $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
         $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
 
-        $totalPemasukan = Transaction::where('tipe', 'pemasukan')
+        $row = Transaction::query()
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
-            ->sum('jumlah');
+            ->selectRaw("coalesce(sum(case when tipe = 'pemasukan' then jumlah else 0 end), 0) as pemasukan, coalesce(sum(case when tipe = 'pengeluaran' then jumlah else 0 end), 0) as pengeluaran, count(*) as total")
+            ->first();
 
-        $totalPengeluaran = Transaction::where('tipe', 'pengeluaran')
-            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
-            ->sum('jumlah');
+        $totalPemasukan = (float) $row->pemasukan;
+        $totalPengeluaran = (float) $row->pengeluaran;
 
         $saldo = $totalPemasukan - $totalPengeluaran;
 
-        $jumlahTransaksi = Transaction::whereBetween('tanggal', [$startOfMonth, $endOfMonth])->count();
+        $jumlahTransaksi = (int) $row->total;
 
         $label = Carbon::create($tahun, $bulan, 1)->translatedFormat('F Y');
 

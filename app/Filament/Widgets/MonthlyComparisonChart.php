@@ -38,11 +38,16 @@ class MonthlyComparisonChart extends ChartWidget
 
         $this->heading = 'Pemasukan vs Pengeluaran (6 Bulan hingga ' . $base->translatedFormat('F Y') . ')';
 
-        $pemasukan = $months->map(fn ($m) => Transaction::where('tipe', 'pemasukan')
-            ->whereBetween('tanggal', [$m['start'], $m['end']])->sum('jumlah'))->toArray();
+        $byKey = Transaction::query()
+            ->selectRaw('tipe, year(tanggal) as th, month(tanggal) as bl, sum(jumlah) as total')
+            ->whereBetween('tanggal', [$months->first()['start'], $months->last()['end']])
+            ->groupBy('tipe', 'th', 'bl')
+            ->get()
+            ->keyBy(fn ($row) => $row->tipe . ':' . $row->th . '-' . $row->bl);
 
-        $pengeluaran = $months->map(fn ($m) => Transaction::where('tipe', 'pengeluaran')
-            ->whereBetween('tanggal', [$m['start'], $m['end']])->sum('jumlah'))->toArray();
+        $pemasukan = $months->map(fn ($m) => (float) ($byKey['pemasukan:' . $m['start']->format('Y-n')]->total ?? 0))->toArray();
+
+        $pengeluaran = $months->map(fn ($m) => (float) ($byKey['pengeluaran:' . $m['start']->format('Y-n')]->total ?? 0))->toArray();
 
         return [
             'datasets' => [
