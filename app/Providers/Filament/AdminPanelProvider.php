@@ -43,6 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->tenant(Couple::class, ownershipRelationship: 'couple')
             ->tenantRegistration(RegisterCouple::class)
+            ->profile(\App\Filament\Pages\EditProfile::class)
             ->resourceCreatePageRedirect('index')
             ->resourceEditPageRedirect('index')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

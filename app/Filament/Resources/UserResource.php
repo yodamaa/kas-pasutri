@@ -11,10 +11,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Tables\Filters\SelectFilter;
+use MatondoJK\FilamentAvatarPicker\Components\AvatarPicker;
 
 class UserResource extends Resource
 {
@@ -41,6 +43,10 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
+                AvatarPicker::make('avatar')
+                    ->label('Foto Profil')
+                    ->imagePreviewHeight(80),
+
                 TextInput::make('name')
                     ->label('Nama')
                     ->required()
@@ -90,6 +96,10 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar')
+                    ->label('Foto')
+                    ->circular()
+                    ->getStateUsing(fn ($record) => $record->avatar ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->avatar) : null),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
