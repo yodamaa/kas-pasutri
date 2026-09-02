@@ -2,9 +2,9 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Components\AvatarPicker;
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Schemas\Schema;
-use MatondoJK\FilamentAvatarPicker\Components\AvatarPicker;
 
 class EditProfile extends BaseEditProfile
 {

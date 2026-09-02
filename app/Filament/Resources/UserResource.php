@@ -2,21 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Components\AvatarPicker;
 use App\Filament\Resources\UserResource\Pages;
-use App\Models\Couple;
 use App\Models\User;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
 use Filament\Tables\Filters\SelectFilter;
-use MatondoJK\FilamentAvatarPicker\Components\AvatarPicker;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends Resource
 {
@@ -99,7 +102,7 @@ class UserResource extends Resource
                 ImageColumn::make('avatar')
                     ->label('Foto')
                     ->circular()
-                    ->getStateUsing(fn ($record) => $record->avatar ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->avatar) : null),
+                    ->getStateUsing(fn ($record) => $record->avatar ? Storage::disk('public')->url($record->avatar) : null),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
@@ -141,11 +144,11 @@ class UserResource extends Resource
                     ]),
             ])
             ->recordActions([
-                \Filament\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
-                \Filament\Actions\BulkActionGroup::make([
-                    \Filament\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
