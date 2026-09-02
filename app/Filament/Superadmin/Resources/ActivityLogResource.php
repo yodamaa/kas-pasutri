@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Superadmin\Resources;
 
-use App\Filament\Resources\ActivityLogResource\Pages;
+use App\Filament\Superadmin\Resources\ActivityLogResource\Pages;
 use App\Models\ActivityLog;
 use BackedEnum;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 
 class ActivityLogResource extends Resource

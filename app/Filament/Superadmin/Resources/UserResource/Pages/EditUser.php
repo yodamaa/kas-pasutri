@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\UserResource\Pages;
+namespace App\Filament\Superadmin\Resources\UserResource\Pages;
 
-use App\Filament\Resources\UserResource;
+use App\Filament\Superadmin\Resources\UserResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 

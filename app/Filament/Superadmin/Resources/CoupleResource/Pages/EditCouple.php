@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\CoupleResource\Pages;
+namespace App\Filament\Superadmin\Resources\CoupleResource\Pages;
 
-use App\Filament\Resources\CoupleResource;
+use App\Filament\Superadmin\Resources\CoupleResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 

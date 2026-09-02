@@ -1,17 +1,20 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Superadmin\Resources;
 
-use App\Filament\Resources\CoupleResource\Pages;
+use App\Filament\Superadmin\Resources\CoupleResource\Pages;
 use App\Models\Couple;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Schemas\Schema;
 
 class CoupleResource extends Resource
 {
@@ -82,11 +85,11 @@ class CoupleResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([
-                \Filament\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
-                \Filament\Actions\BulkActionGroup::make([
-                    \Filament\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

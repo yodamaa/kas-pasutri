@@ -14,6 +14,10 @@ Buka browser: **http://127.0.0.1:8000/admin**
 > **Alternatif (jika domain sudah terdaftar di hosts):** `http://project-uang-pasutri.test/admin`
 > (Apache Laragon, port 80). Catatan: aplikasi memakai multi-pasangan (tenancy), jadi
 > setelah login halaman akan beralih ke `admin/{id}/...` sesuai pasangan yang dipilih.
+>
+> **Superadmin punya panel khusus:** `http://127.0.0.1:8000/superadmin`
+> (dashboard global semua pasangan + menu Pengaturan). Setelah login, superadmin
+> otomatis diarahkan ke panel ini.
 
 ### 2. Login
 
@@ -43,6 +47,25 @@ Buka browser: **http://127.0.0.1:8000/admin**
   - User - kelola akun suami/istri (termasuk foto profil)
   - Log Aktivitas - riwayat perubahan data
 - **Profil** (ikon user di pojok kanan atas) - ubah foto profil & data akun
+
+> Menu **Pengaturan**, **Pasangan**, **User**, dan **Log Aktivitas** serta dashboard
+> global hanya tersedia di panel Superadmin (`/superadmin`). Suami/Istri tetap melihat
+> menu sesuai kelompok **Transaksi** saja.
+
+---
+
+## Panel Superadmin (`/superadmin`)
+
+Dashboard khusus superadmin menampilkan rekap **semua pasangan**:
+- Statistik global - total pasangan aktif, total user, total pemasukan/pengeluaran/saldo
+  bulan terpilih, jumlah transaksi
+- Grafik pemasukan vs pengeluaran 6 bulan (gabungan)
+- Grafik pengeluaran per kategori (gabungan)
+- Transaksi terakhir dari semua pasangan
+- **Rekap per Pasangan** - tabel nama, kode, anggota, pemasukan, pengeluaran, saldo,
+  status + tombol **Buka Dashboard Pasangan** (menuju panel pasangan di `/admin/{id}`)
+
+Pilih **Bulan** dan **Tahun** di atas dashboard untuk mengubah periode rekap.
 
 ---
 

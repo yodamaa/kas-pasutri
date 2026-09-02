@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Superadmin\Resources;
 
 use App\Filament\Components\AvatarPicker;
-use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Superadmin\Resources\UserResource\Pages;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -39,7 +39,7 @@ class UserResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->role === 'superadmin';
+        return \Illuminate\Support\Facades\Auth::user()?->role === 'superadmin';
     }
 
     public static function form(Schema $schema): Schema
@@ -102,7 +102,7 @@ class UserResource extends Resource
                 ImageColumn::make('avatar')
                     ->label('Foto')
                     ->circular()
-                    ->getStateUsing(fn ($record) => $record->avatar ? Storage::disk('public')->url($record->avatar) : null),
+                    ->getStateUsing(fn ($record) => $record->avatar ? Storage::disk('public')->path($record->avatar) : null),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

@@ -15,8 +15,7 @@ class EditProfile extends BaseEditProfile
         return $schema
             ->components([
                 AvatarPicker::make('avatar')
-                    ->label('Foto Profil')
-                    ->imagePreviewHeight(80),
+                    ->label('Foto Profil'),
                 $this->getNameFormComponent(),
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),

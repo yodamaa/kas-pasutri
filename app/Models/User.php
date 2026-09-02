@@ -44,8 +44,15 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasDefaul
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return in_array($this->role, ['superadmin', 'suami', 'istri'])
-            && ($this->is_active ?? true);
+        if (! in_array($this->role, ['superadmin', 'suami', 'istri']) || ! ($this->is_active ?? true)) {
+            return false;
+        }
+
+        if ($panel->getId() === 'superadmin' && ! $this->isSuperadmin()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getDefaultTenant(Panel $panel): ?Model
@@ -63,7 +70,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasDefaul
         return $this->couple;
     }
 
-    public function getTenants(Panel $panel): array | Collection
+    public function getTenants(Panel $panel): array|Collection
     {
         if ($this->isSuperadmin()) {
             return Couple::query()->get();
