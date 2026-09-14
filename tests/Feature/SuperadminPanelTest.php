@@ -75,4 +75,19 @@ class SuperadminPanelTest extends TestCase
     {
         $this->get('/superadmin')->assertRedirect('/superadmin/login');
     }
+
+    public function test_superadmin_can_view_users_list(): void
+    {
+        $couple = $this->makeCouple();
+        $admin = $this->makeUser('superadmin', null);
+        $this->makeUser('suami', $couple);
+
+        $this->actingAs($admin);
+
+        $response = $this->get('/superadmin/users');
+
+        $response->assertOk()
+            ->assertSee('Foto')
+            ->assertSee('Suami');
+    }
 }

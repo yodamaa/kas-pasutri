@@ -19,7 +19,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -39,7 +39,7 @@ class UserResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return \Illuminate\Support\Facades\Auth::user()?->role === 'superadmin';
+        return Auth::user()?->role === 'superadmin';
     }
 
     public static function form(Schema $schema): Schema
@@ -102,7 +102,9 @@ class UserResource extends Resource
                 ImageColumn::make('avatar')
                     ->label('Foto')
                     ->circular()
-                    ->getStateUsing(fn ($record) => $record->avatar ? Storage::disk('public')->path($record->avatar) : null),
+                    ->disk('public')
+                    ->size(40)
+                    ->ring(2),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
