@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\Transactions\Schemas;
 
+use App\Filament\Support\PeruntukanOptions;
 use App\Models\Budget;
-use App\Models\Category;
-use App\Models\PaymentMethod;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -35,9 +34,8 @@ class TransactionForm
                     ->afterStateUpdated(fn ($set) => $set('budget_id', null)),
                 Select::make('peruntukan_id')
                     ->label('Jenis Peruntukan')
-                    ->relationship('peruntukan', 'nama', fn ($query, $get) => $query->where('is_active', true)->where('tipe', $get('tipe')))
+                    ->options(fn ($get): array => PeruntukanOptions::for($get('tipe')))
                     ->searchable()
-                    ->preload()
                     ->required()
                     ->live()
                     ->afterStateUpdated(fn ($set) => $set('budget_id', null)),
@@ -45,7 +43,7 @@ class TransactionForm
                     ->label('Pakai Anggaran?')
                     ->options(function ($get) use ($coupleId) {
                         $peruntukanId = $get('peruntukan_id');
-                        if (!$peruntukanId) {
+                        if (! $peruntukanId) {
                             return [];
                         }
 
@@ -63,11 +61,12 @@ class TransactionForm
 
                         return $query->get()
                             ->mapWithKeys(function ($budget) {
-                                $label = $budget->nama ? $budget->nama . ' — ' : '';
-                                $label .= 'Rp ' . number_format($budget->sisa, 0, ',', '.') . ' tersisa dari Rp ' . number_format($budget->jumlah, 0, ',', '.');
+                                $label = $budget->nama ? $budget->nama.' — ' : '';
+                                $label .= 'Rp '.number_format($budget->sisa, 0, ',', '.').' tersisa dari Rp '.number_format($budget->jumlah, 0, ',', '.');
                                 if ($budget->persentase > 0) {
-                                    $label .= ' (' . $budget->persentase . '%)';
+                                    $label .= ' ('.$budget->persentase.'%)';
                                 }
+
                                 return [
                                     $budget->id => $label,
                                 ];
@@ -100,13 +99,13 @@ class TransactionForm
                     ->rules(function ($get) {
                         return function ($attribute, $value, $fail) use ($get) {
                             $budgetId = $get('budget_id');
-                            if (!$budgetId || !$value) {
+                            if (! $budgetId || ! $value) {
                                 return;
                             }
 
                             $budget = Budget::find($budgetId);
                             if ($budget && $value > $budget->sisa) {
-                                $fail('Jumlah melebihi sisa anggaran! Sisa tersisa: Rp ' . number_format($budget->sisa, 0, ',', '.'));
+                                $fail('Jumlah melebihi sisa anggaran! Sisa tersisa: Rp '.number_format($budget->sisa, 0, ',', '.'));
                             }
                         };
                     }),

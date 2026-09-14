@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\RecurringTransactions\Schemas;
 
-use App\Models\Category;
+use App\Filament\Support\PeruntukanOptions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -43,13 +43,8 @@ class RecurringTransactionForm
                 Grid::make(2)->schema([
                     Select::make('peruntukan_id')
                         ->label('Jenis Peruntukan')
-                        ->options(function ($get) {
-                            return Category::where('is_active', true)
-                                ->when($get('tipe'), fn ($q, $tipe) => $q->where('tipe', $tipe))
-                                ->pluck('nama', 'id');
-                        })
+                        ->options(fn ($get): array => PeruntukanOptions::for($get('tipe')))
                         ->searchable()
-                        ->preload()
                         ->required()
                         ->live(),
                     Select::make('metode_pembayaran_id')

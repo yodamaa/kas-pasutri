@@ -1,59 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Uang Pasutri
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web manajemen keuangan keluarga untuk pasangan suami istri. Mencatat, mengelola, dan memantau keuangan bersama secara transparan — dibangun dengan **Laravel 12** dan **Filament v5**.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Multi-pasangan (tenancy)** — tiap pasangan punya ruang data sendiri; superadmin memantau semua pasangan.
+- **Panel Superadmin** (`/superadmin`) — dashboard global & rekap per pasangan, kelola pasangan, user, dan log aktivitas.
+- **Dashboard** — statistik pemasukan/pengeluaran/saldo, grafik 6 bulan, pengeluaran per kategori, progress anggaran, transaksi terakhir; bisa difilter per bulan/tahun.
+- **Transaksi** — CRUD lengkap dengan lampiran foto, filter, export Excel, **laporan bulanan PDF**, **import CSV**, dan **soft delete** (recycle bin).
+- **Transaksi Berulang** — harian/mingguan/bulanan/tahunan, di-generate otomatis via scheduler.
+- **Anggaran** — beberapa anggaran per kategori, progress bar, notifikasi saat melewati ambang batas.
+- **Master data** — jenis pembayaran & jenis peruntukan (kategori).
+- **Profil & avatar** — foto profil dari galeri maupun unggahan.
+- **Audit log** — riwayat perubahan data otomatis.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Komponen | Teknologi |
+|----------|-----------|
+| Backend | Laravel 12 (PHP 8.2+) |
+| Admin Panel | Filament v5 |
+| Database | MySQL 8.x (Laragon) atau SQLite (testing) |
+| Export | DomPDF (PDF), Maatwebsite Excel (XLSX/CSV) |
+| Avatar | matondojk/filament-avatar-picker |
+| Charts | Filament ChartWidget (ApexCharts) |
 
-## Learning Laravel
+## Persyaratan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP ^8.2, Composer, Node.js & npm (untuk asset)
+- MySQL (via Laragon) atau SQLite
+- Ekstensi PHP yang biasa dibutuhkan Laravel (`fileinfo`, `gd`/`imagick` untuk PDF & gambar)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalasi
 
-## Laravel Sponsors
+```bash
+composer install
+cp .env.example .env          # sesuaikan kredensial DB
+php artisan key:generate
+php artisan migrate --seed
+npm install && npm run build  # asset frontend
+php artisan serve
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Buka **http://127.0.0.1:8000/admin** untuk panel utama, atau **http://127.0.0.1:8000/superadmin** untuk panel superadmin.
 
-### Premium Partners
+> Setelah login, karena aplikasi memakai tenancy, URL beralih ke `admin/{id}/...` sesuai pasangan aktif.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Akun bawaan (seeder)
 
-## Contributing
+| Email | Password | Role |
+|-------|----------|------|
+| admin@email.com | password | Superadmin |
+| rehan@email.com | password | Suami |
+| ayu@email.com | password | Istri |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Menjalankan Transaksi Berulang Otomatis
 
-## Code of Conduct
+```bash
+php artisan schedule:work          # scheduler berjalan tiap hari 00:05
+# atau manual kapan saja:
+php artisan app:generate-recurring-transactions
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Testing
 
-## Security Vulnerabilities
+```bash
+php artisan test    # atau: composer test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Test memakai SQLite in-memory (`refresh database` di setiap test).
 
-## License
+## Panduan Penggunaan
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Panduan lengkap penggunaan tiap menu tersedia di **[CARA_PAKAI.md](CARA_PAKAI.md)** — alur mencatat transaksi, anggaran, transaksi berulang, master data, hingga pengaturan superadmin.
+
+## Struktur Proyek
+
+```
+app/
+├── Exports/                 # Export Excel & PDF
+├── Filament/
+│   ├── Components/          # Komponen custom (mis. AvatarPicker)
+│   ├── Pages/               # Dashboard, Profil, RegisterCouple
+│   ├── Resources/           # Resource panel pasangan
+│   ├── Superadmin/          # Resource & widget khusus panel superadmin
+│   ├── Support/             # Helper (mis. PeruntukanOptions)
+│   └── Widgets/             # Widget dashboard
+├── Imports/                 # Import CSV transaksi
+├── Models/                  # Eloquent models
+└── Traits/LogsActivity.php  # Audit log otomatis
+```
+
+## Dokumentasi Terkait
+
+- **[PRD.md](PRD.md)** — product requirements
+- **[ISSUES.md](ISSUES.md)** — daftar isu, TODO, dan tech debt
+- **[CARA_PAKAI.md](CARA_PAKAI.md)** — panduan pemakaian
+
+## Lisensi
+
+MIT — proyek ini berbasis [Laravel](https://laravel.com), yang dirilis di bawah [MIT license](https://opensource.org/licenses/MIT).

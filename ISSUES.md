@@ -14,9 +14,9 @@
 - **Fix**: Pastikan action `->action()` return `Excel::download()` bukan void
 
 ### 3. TransactionForm - Kategori Tipe Filter
-- **Status**: Minor
-- **Deskripsi**: Dropdown "Jenis Peruntukan" difilter berdasarkan tipe transaksi, tapi filter `->options()` memanggil query setiap kali state berubah
-- **Optimasi**: Pertimbangkan cache atau lazy loading
+- **Status**: Fixed
+- **Deskripsi**: Dropdown "Jenis Peruntukan" difilter berdasarkan tipe transaksi; query dijalankan setiap state berubah
+- **Solusi**: Opsi di-cache lewat `App\Filament\Support\PeruntukanOptions` (cache 1 jam, dibersihkan otomatis saat kategori dibuat/diubah/dihapus) dan dipakai pada form transaksi & transaksi berulang
 
 ---
 
@@ -45,4 +45,4 @@
 ## Tech Debt
 - Public assets (CSS/JS/Fonks) di-commit ke git. Pertimbangkan build dengan Vite hanya file yang diperlukan
 - `TransactionsTable` uses `recordActions` dan `toolbarActions` - pastikan API ini masih valid di Filament v5
-- Widget `BudgetOverviewWidget` menggunakan raw Blade view (`budget-overview.blade.php`) - pertimbangkan refactor ke component
+- Widget `BudgetOverviewWidget` sudah direfactor ke komponen blade (`x-budget-progress`) dan kini men-scope data per asangan (couple_id)

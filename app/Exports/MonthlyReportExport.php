@@ -84,7 +84,8 @@ class MonthlyReportExport
 
         return response()->streamDownload(
             fn () => print ($pdf->output()),
-            $filename
+            $filename,
+            ['Content-Type' => 'application/pdf'],
         );
     }
 }
